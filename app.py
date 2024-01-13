@@ -151,7 +151,6 @@ if __name__=="__main__":
             speak("openning valorent")
             codepath = "C:\\Riot Games\\Riot Client\\RiotClientServices.exe"
             os.startfile(codepath)
-# ek din api Kharred k kru ga project pura kruga!!!!
         # else:
         #     # Use OpenAI API for general responses
         #     prompt = f"You said: {query}"
