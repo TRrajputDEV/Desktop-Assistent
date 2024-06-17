@@ -16,7 +16,7 @@ cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
 retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
 openmeteo = openmeteo_requests.Client(session = retry_session)
 
-openai.api_key = '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'
+openai.api_key = ''
 engine = pyttsx3.init('sapi5')
 voices=engine.getProperty("voices")
 # print(voices[1].id)
