@@ -4,19 +4,8 @@ import speech_recognition as sr
 import wikipedia
 import webbrowser
 import os
-import openai
-import openmeteo_requests
 
-import requests_cache
-import pandas as pd
-from retry_requests import retry
 
-# Setup the Open-Meteo API client with cache and retry on error
-cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
-retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
-openmeteo = openmeteo_requests.Client(session = retry_session)
-
-openai.api_key = ''
 engine = pyttsx3.init('sapi5')
 voices=engine.getProperty("voices")
 # print(voices[1].id)
@@ -58,47 +47,6 @@ def takecommand():
         print("say that again....")
         return "None"
     return query
-
-def get_and_display_weather():
-    # Replace these coordinates with the desired location
-    latitude = 28.9034473
-    longitude = 76.5719414
-
-    url = "https://api.open-meteo.com/v1/forecast"
-    params = {
-        "latitude": latitude,
-        "longitude": longitude,
-        "hourly": "temperature_2m"
-    }
-
-    responses = openmeteo.weather_api(url, params=params)
-
-    # Process first location. Add a for-loop for multiple locations or weather models
-    response = responses[0]
-    speak(f"Coordinates {response.Latitude()}°E {response.Longitude()}°N")
-    print(f"Coordinates {response.Latitude()}°E {response.Longitude()}°N")
-    speak(f"Elevation {response.Elevation()} m asl")
-    print(f"Elevation {response.Elevation()} m asl")
-    speak(f"Timezone {response.Timezone()} {response.TimezoneAbbreviation()}")
-    print(f"Timezone {response.Timezone()} {response.TimezoneAbbreviation()}")
-    speak(f"Timezone difference to GMT+0 {response.UtcOffsetSeconds()} s")
-    print(f"Timezone difference to GMT+0 {response.UtcOffsetSeconds()} s")
-
-    # Process hourly data. The order of variables needs to be the same as requested.
-    hourly = response.Hourly()
-    hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()
-
-    hourly_data = {"date": pd.date_range(
-        start=pd.to_datetime(hourly.Time(), unit="s"),
-        end=pd.to_datetime(hourly.TimeEnd(), unit="s"),
-        freq=pd.Timedelta(seconds=hourly.Interval()),
-        inclusive="left"
-    )}
-    hourly_data["temperature_2m"] = hourly_temperature_2m
-
-    hourly_dataframe = pd.DataFrame(data=hourly_data)
-    speak(hourly_dataframe)
-    print(hourly_dataframe)
 
 if __name__=="__main__":
     speak("")
@@ -151,18 +99,6 @@ if __name__=="__main__":
             speak("openning valorent")
             codepath = "C:\\Riot Games\\Riot Client\\RiotClientServices.exe"
             os.startfile(codepath)
-        # else:
-        #     # Use OpenAI API for general responses
-        #     prompt = f"You said: {query}"
-        #     response = openai.Completion.create(
-        #         engine="gpt-3.5-turbo",
-        #         prompt=prompt,
-        #         max_tokens=150  # You can adjust this based on your preference
-        #     )
-        #     ai_response = response.choices[0].text.strip()
-
-        #     # Speak the AI response
-        #     speak(ai_response)
 
         #     # Optionally, you can also print the AI response to the console
         #     print("AI:", ai_response)
